@@ -4,28 +4,30 @@ import (
 	"github.com/libsv/go-bt/v2"
 )
 
-func ExampleAlreadySpendedBeef() {
+func ExampleAlreadySpendedBeef() string {
 	destination := getTestDestination()
 
 	parentTx, testTx, testBeef := prepareTestData(destination, getAlreadySpendedTx, 500, 1)
-	printOut(parentTx, testTx, testBeef)
+
+	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleSomeoneElseUtxos() {
+func ExampleSomeoneElseUtxos() string {
 	destination := getTestDestination()
 
 	parentTx, testTx, testBeef := prepareTestData(destination, getSomeoneElseTx, 500, 1)
-	printOut(parentTx, testTx, testBeef)
+
+	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleTooMuchSatoshis() {
+func ExampleTooMuchSatoshis() string {
 	destination := getTestDestination()
 
 	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 5000, 1)
-	printOut(parentTx, testTx, testBeef)
+	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleWithLockTime() {
+func ExampleWithLockTime() string {
 	withLockTime := func(tx *bt.Tx) {
 		tx.LockTime = 99999
 	}
@@ -33,10 +35,11 @@ func ExampleWithLockTime() {
 	destination := getTestDestination()
 
 	parentTx, testTx, testBeef := prepareTestDataWithOptions(destination, getTxReadyToSpend, 500, 1, []func(*bt.Tx){withLockTime})
-	printOut(parentTx, testTx, testBeef)
+
+	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleInputsWithLockTimeAndSequence() {
+func ExampleInputsWithLockTimeAndSequence() string {
 	withLockTime := func(tx *bt.Tx) {
 		tx.LockTime = 99999
 	}
@@ -50,5 +53,6 @@ func ExampleInputsWithLockTimeAndSequence() {
 	destination := getTestDestination()
 
 	parentTx, testTx, testBeef := prepareTestDataWithOptions(destination, getTxReadyToSpend, 500, 1, []func(*bt.Tx){withLockTime, withSequence})
-	printOut(parentTx, testTx, testBeef)
+
+	return printOut(parentTx, testTx, testBeef)
 }

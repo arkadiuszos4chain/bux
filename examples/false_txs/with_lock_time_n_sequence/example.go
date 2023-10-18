@@ -1,7 +1,15 @@
 package main
 
-import "github.com/BuxOrg/bux"
+import (
+	"fmt"
+
+	"github.com/BuxOrg/bux"
+)
 
 func main() {
-	bux.ExampleInputsWithLockTimeAndSequence()
+	s := bux.ExampleInputsWithLockTimeAndSequence()
+
+	fmt.Println(s)
+
+	bux.WriteToFile("with_lock_time_n_sequence.txt", "with_lock_time_n_sequence", s)
 }

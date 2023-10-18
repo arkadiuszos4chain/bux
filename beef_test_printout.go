@@ -4,64 +4,86 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/libsv/go-bt/v2"
 )
 
-func printOut(inputParentTx, testTx *Transaction, beefData *beefTx) {
-	fmt.Println("Inputs parent tx:")
-	_printTx(inputParentTx)
+func WriteToFile(path, exampleName, content string) {
+	f, err := os.Create(path)
+	defer f.Close()
 
-	fmt.Println("Test Tx:")
-	_printTx(testTx)
+	if err != nil {
+		panic(err)
+	}
 
-	fmt.Println("Test BEEF:")
-	_printBeefJson(beefData)
+	header := fmt.Sprintf("generated with %s example", exampleName)
+	f.WriteString(fmt.Sprintf("%s\n** %44s **\n%s\n", strings.Repeat("*", 50), header, strings.Repeat("*", 50)))
+	f.WriteString(content)
+}
+
+func printOut(inputParentTx, testTx *Transaction, beefData *beefTx) string {
+	var b strings.Builder
+
+	b.WriteString("Inputs parent tx:\n")
+	_printTx(inputParentTx, &b)
+
+	b.WriteString("Test Tx:\n")
+	_printTx(testTx, &b)
+
+	b.WriteString("Test BEEF:\n")
+	_printBeefJson(beefData, &b)
 
 	beefBytes, err := beefData.toBeefBytes()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("BEEF hex:")
-	fmt.Println(hex.EncodeToString(beefBytes))
-	fmt.Println()
+	b.WriteString("BEEF hex:\n")
+	b.WriteString(hex.EncodeToString(beefBytes))
+	b.WriteString("\n")
 
+	return b.String()
 }
 
-func _printTx(tx *Transaction) {
-	fmt.Println("Print out tx:")
-	fmt.Println()
-
-	fmt.Println("Raw transaction info:")
+func _printTx(tx *Transaction, b *strings.Builder) {
+	b.WriteString("Raw transaction info:\n")
 	btx, _ := bt.NewTxFromString(tx.Hex)
-	_prettyPrint(btx)
+	_prettyPrint(btx, b)
 
-	fmt.Println("Bux info:")
-	_prettyPrint(tx)
-	_prettyPrint(tx.draftTransaction)
+	b.WriteString("Bux info:\n")
+	b.WriteString("Transaction:\n")
+	_prettyPrint(tx, b)
+	b.WriteString("Draft:\n")
+	_prettyPrint(tx.draftTransaction, b)
 
-	fmt.Println()
-	fmt.Println("===============")
+	b.WriteString("\n")
+	b.WriteString("===============\n")
 }
 
-func _printBeefJson(bf *beefTx) {
+func _printBeefJson(bf *beefTx, b *strings.Builder) {
 	js := _beefTxJs{
 		Version:             bf.version,
 		CompoundMerklePaths: bf.compoundMerklePaths,
 		Transactions:        bf.transactions,
 	}
 
-	_prettyPrint(js)
+	_prettyPrint(js, b)
 }
 
-func _prettyPrint(v interface{}) {
+func _prettyPrint(v interface{}, b *strings.Builder) {
 	vJson, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		fmt.Printf("Error: %+v\n", err)
 	}
 
-	fmt.Printf("%s\n", vJson)
+	if len(vJson) == 0 {
+		b.WriteString("nil\n")
+	} else {
+		b.Write(vJson)
+		b.WriteString("\n")
+	}
 }
 
 type _beefTxJs struct {

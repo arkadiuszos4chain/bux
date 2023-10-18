@@ -1,7 +1,15 @@
 package main
 
-import "github.com/BuxOrg/bux"
+import (
+	"fmt"
+
+	"github.com/BuxOrg/bux"
+)
 
 func main() {
-	bux.ExampleAlreadySpendedBeef()
+	s := bux.ExampleAlreadySpendedBeef()
+
+	fmt.Println(s)
+
+	bux.WriteToFile("already_spended_utxos.txt", "already_spended_utxos", s)
 }

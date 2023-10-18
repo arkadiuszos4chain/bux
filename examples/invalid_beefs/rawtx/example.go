@@ -1,7 +1,15 @@
 package main
 
-import "github.com/BuxOrg/bux"
+import (
+	"fmt"
+
+	"github.com/BuxOrg/bux"
+)
 
 func main() {
-	bux.ExampleRawTx()
+	s := bux.ExampleRawTx()
+
+	fmt.Println(s)
+
+	bux.WriteToFile("rawtx.txt", "rawtx", s)
 }

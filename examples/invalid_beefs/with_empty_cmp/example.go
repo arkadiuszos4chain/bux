@@ -1,7 +1,15 @@
 package main
 
-import "github.com/BuxOrg/bux"
+import (
+	"fmt"
+
+	"github.com/BuxOrg/bux"
+)
 
 func main() {
-	bux.ExampleBeefWithEmptyCmp()
+	s := bux.ExampleBeefWithEmptyCmp()
+
+	fmt.Println(s)
+
+	bux.WriteToFile("with_empty_cmp.txt", "with_empty_cmp", s)
 }

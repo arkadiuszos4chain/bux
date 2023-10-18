@@ -1,7 +1,15 @@
 package main
 
-import "github.com/BuxOrg/bux"
+import (
+	"fmt"
+
+	"github.com/BuxOrg/bux"
+)
 
 func main() {
-	bux.ExampleBeefWithoutParents()
+	s := bux.ExampleBeefWithoutParents()
+
+	fmt.Println(s)
+
+	bux.WriteToFile("without_parents.txt", "without_parents", s)
 }

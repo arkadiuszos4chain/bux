@@ -1,7 +1,15 @@
 package main
 
-import "github.com/BuxOrg/bux"
+import (
+	"fmt"
+
+	"github.com/BuxOrg/bux"
+)
 
 func main() {
-	bux.ExampleSomeoneElseUtxos()
+	s := bux.ExampleSomeoneElseUtxos()
+
+	fmt.Println(s)
+
+	bux.WriteToFile("someone_else_utxos.txt", "someone_else_utxos", s)
 }

@@ -1,12 +1,8 @@
 package bux
 
-import (
-	"fmt"
-)
-
-func ExampleRawTx() {
+func ExampleRawTx() string {
 	rawTx := getTxReadyToSpend().Hex
-	fmt.Println(rawTx)
+	return rawTx
 }
 
 // func ExampleEfTx() {
@@ -15,7 +11,7 @@ func ExampleRawTx() {
 // 	fmt.Println(efTx)
 // }
 
-func ExampleBeefWithoutParents() {
+func ExampleBeefWithoutParents() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 
@@ -23,10 +19,10 @@ func ExampleBeefWithoutParents() {
 
 	testBeef.transactions = []*Transaction{testTx} // no parent
 
-	printOut(parentTx, testTx, testBeef)
+	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleBeefWithoutCmp() {
+func ExampleBeefWithoutCmp() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 
@@ -34,10 +30,10 @@ func ExampleBeefWithoutCmp() {
 
 	testBeef.compoundMerklePaths = nil //no cmp
 
-	printOut(parentTx, testTx, testBeef)
+	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleBeefWithEmptyCmp() {
+func ExampleBeefWithEmptyCmp() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 
@@ -45,5 +41,5 @@ func ExampleBeefWithEmptyCmp() {
 
 	testBeef.compoundMerklePaths = CMPSlice{} // empty cmp
 
-	printOut(parentTx, testTx, testBeef)
+	return printOut(parentTx, testTx, testBeef)
 }

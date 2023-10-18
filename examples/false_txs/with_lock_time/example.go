@@ -1,7 +1,15 @@
 package main
 
-import "github.com/BuxOrg/bux"
+import (
+	"fmt"
+
+	"github.com/BuxOrg/bux"
+)
 
 func main() {
-	bux.ExampleWithLockTime()
+	s := bux.ExampleWithLockTime()
+
+	fmt.Println(s)
+
+	bux.WriteToFile("with_lock_time.txt", "with_lock_time", s)
 }
