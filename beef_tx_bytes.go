@@ -1,12 +1,7 @@
 package bux
 
 import (
-<<<<<<< HEAD
 	"errors"
-=======
-	"encoding/hex"
-	"fmt"
->>>>>>> 01e88c2 (test: add false txs and invalid beefs)
 
 	"github.com/libsv/go-bt/v2"
 )
@@ -17,16 +12,10 @@ var (
 )
 
 func (beefTx *beefTx) toBeefBytes() ([]byte, error) {
-<<<<<<< HEAD
+
 	if len(beefTx.bumps) == 0 || len(beefTx.transactions) < 2 { // valid BEEF contains at least two transactions (new transaction and one parent transaction)
 		return nil, errors.New("beef tx is incomplete")
 	}
-=======
-	// changed for tests
-	// if len(beefTx.compoundMerklePaths) == 0 || len(beefTx.transactions) < 2 { // valid BEEF contains at least two transactions (new transaction and one parent transaction)
-	// 	return nil, errors.New("beef tx is incomplete")
-	// }
->>>>>>> 01e88c2 (test: add false txs and invalid beefs)
 
 	// get beef bytes
 	beefSize := 0

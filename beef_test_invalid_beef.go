@@ -1,5 +1,7 @@
 package bux
 
+import "github.com/libsv/go-bt/v2"
+
 func ExampleRawTx() string {
 	rawTx := getTxReadyToSpend().Hex
 	return rawTx
@@ -17,7 +19,7 @@ func ExampleBeefWithoutParents() string {
 
 	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 1)
 
-	testBeef.transactions = []*Transaction{testTx} // no parent
+	testBeef.transactions = []*bt.Tx{bux2btTxConvert(testTx)} // no parent
 
 	return printOut(parentTx, testTx, testBeef)
 }
@@ -28,7 +30,7 @@ func ExampleBeefWithoutCmp() string {
 
 	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 1)
 
-	testBeef.compoundMerklePaths = nil //no cmp
+	testBeef.bumps = nil //no bumps
 
 	return printOut(parentTx, testTx, testBeef)
 }
@@ -39,7 +41,7 @@ func ExampleBeefWithEmptyCmp() string {
 
 	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 1)
 
-	testBeef.compoundMerklePaths = CMPSlice{} // empty cmp
+	testBeef.bumps = BUMPs{} // empty bumps
 
 	return printOut(parentTx, testTx, testBeef)
 }

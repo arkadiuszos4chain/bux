@@ -69,7 +69,7 @@ func (b *_falseDraftTxBuilder) Build() *DraftTransaction {
 	falseConfig := b._createConfig()
 
 	falseDraft := newDraftTransaction(b.pubKey, falseConfig)
-	falseDraft.CompoundMerklePathes = b._calculateCompoundMerklePath()
+	falseDraft.BUMPs = b._calculateBUMPs()
 	falseDraft.Hex = b._generateHex(falseDraft)
 
 	return falseDraft
@@ -120,20 +120,20 @@ func (b *_falseDraftTxBuilder) _convertOutputsToConfigOutputs() []*TransactionOu
 	return results
 }
 
-func (b *_falseDraftTxBuilder) _calculateCompoundMerklePath() CMPSlice {
+func (b *_falseDraftTxBuilder) _calculateBUMPs() BUMPs {
 	merkleProofs := make(map[uint64][]MerkleProof)
 	merkleProofs[b.parentTx.BlockHeight] = append(merkleProofs[b.parentTx.BlockHeight], b.parentTx.MerkleProof)
 
-	cmps := make(CMPSlice, 0)
-	for _, v := range merkleProofs {
-		cmp, err := CalculateCompoundMerklePath(v)
+	bumpCollection := make(BUMPs, 0)
+	for bh, v := range merkleProofs {
+		bump, err := CalculateMergedBUMP(bh, v)
 		if err != nil {
 			panic(err)
 		}
-		cmps = append(cmps, cmp)
+		bumpCollection = append(bumpCollection, bump)
 	}
 
-	return cmps
+	return bumpCollection
 }
 
 func (b *_falseDraftTxBuilder) _generateHex(falseDraft *DraftTransaction) string {

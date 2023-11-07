@@ -410,8 +410,8 @@ func (m *DraftTransaction) createTransactionHex(ctx context.Context) (err error)
 	if inputValue-outputValue != m.Configuration.Fee {
 		return ErrTransactionFeeInvalid
 	}
-	for _, b := range bumps {
-		bump, err := CalculateMergedBUMP(b)
+	for bh, v := range merkleProofs {
+		bump, err := CalculateMergedBUMP(bh, v)
 		if err != nil {
 			return fmt.Errorf("Error while calculating Merged BUMP: %s", err.Error())
 		}

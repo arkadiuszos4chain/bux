@@ -99,7 +99,131 @@ func TestBUMPModel_CalculateBUMP(t *testing.T) {
 		}
 
 		// when
-		bump, err := CalculateMergedBUMP(bumps)
+		bump, err := CalculateMergedBUMP(0, merkleProofs)
+
+		// then
+		assert.NoError(t, err)
+		assert.Equal(t, expectedBUMP, bump)
+	})
+
+	t.Run("Slice of Merkle Proofs", func(t *testing.T) {
+		// given
+		merkleProofs := []MerkleProof{
+			{
+				Index:  2,
+				TxOrID: "txId1",
+				Nodes:  []string{"D", "AB", "EFGH", "IJKLMNOP"},
+			},
+			{
+				Index:  7,
+				TxOrID: "txId2",
+				Nodes:  []string{"G", "EF", "ABCD", "IJKLMNOP"},
+			},
+			{
+				Index:  13,
+				TxOrID: "txId3",
+				Nodes:  []string{"M", "OP", "IJKL", "ABCDEFGH"},
+			},
+		}
+		expectedBUMP := BUMP{
+			BlockHeight: 0,
+			Path: [][]BUMPLeaf{
+				{
+					{
+						Offset: 2,
+						Hash:   "txId1",
+						TxID:   true,
+					},
+					{
+						Offset: 3,
+						Hash:   "D",
+					},
+					{
+						Offset: 6,
+						Hash:   "G",
+					},
+					{
+						Offset: 7,
+						Hash:   "txId2",
+						TxID:   true,
+					},
+					{
+						Offset: 12,
+						Hash:   "M",
+					},
+					{
+						Offset: 13,
+						Hash:   "txId3",
+						TxID:   true,
+					},
+				},
+				{
+					{
+						Offset: 0,
+						Hash:   "AB",
+					},
+					{
+						Offset: 2,
+						Hash:   "EF",
+					},
+					{
+						Offset: 7,
+						Hash:   "OP",
+					},
+				},
+				{
+					{
+						Offset: 0,
+						Hash:   "ABCD",
+					},
+					{
+						Offset: 1,
+						Hash:   "EFGH",
+					},
+					{
+						Offset: 2,
+						Hash:   "IJKL",
+					},
+				},
+				{
+					{
+						Offset: 0,
+						Hash:   "ABCDEFGH",
+					},
+					{
+						Offset: 1,
+						Hash:   "IJKLMNOP",
+					},
+				},
+			},
+			allNodes: []map[uint64]bool{
+				{
+					2:  true,
+					3:  true,
+					6:  true,
+					7:  true,
+					12: true,
+					13: true,
+				},
+				{
+					0: true,
+					2: true,
+					7: true,
+				},
+				{
+					0: true,
+					1: true,
+					2: true,
+				},
+				{
+					0: true,
+					1: true,
+				},
+			},
+		}
+
+		// when
+		bump, err := CalculateMergedBUMP(0, merkleProofs)
 
 		// then
 		assert.NoError(t, err)
@@ -230,7 +354,7 @@ func TestBUMPModel_CalculateBUMP(t *testing.T) {
 		}
 
 		// when
-		bump, err := CalculateMergedBUMP(bumps)
+		bump, err := CalculateMergedBUMP(0, merkleProofs)
 
 		// then
 		assert.NoError(t, err)
@@ -305,7 +429,7 @@ func TestBUMPModel_CalculateBUMP(t *testing.T) {
 		}
 
 		// when
-		bump, err := CalculateMergedBUMP(bumps)
+		bump, err := CalculateMergedBUMP(0, merkleProofs)
 
 		// then
 		assert.Error(t, err)
@@ -362,19 +486,7 @@ func TestBUMPModel_CalculateBUMP(t *testing.T) {
 		}
 
 		// when
-		bump, err := CalculateMergedBUMP(bumps)
-
-		// then
-		assert.Error(t, err)
-		assert.Nil(t, bump)
-	})
-
-	t.Run("Empty slice of BUMPS", func(t *testing.T) {
-		// given
-		bumps := []BUMP{}
-
-		// when
-		bump, err := CalculateMergedBUMP(bumps)
+		bump, err := CalculateMergedBUMP(0, merkleProof)
 
 		// then
 		assert.NoError(t, err)
@@ -387,7 +499,7 @@ func TestBUMPModel_CalculateBUMP(t *testing.T) {
 			{}, {}, {},
 		}
 		// when
-		bump, err := CalculateMergedBUMP(bumps)
+		bump, err := CalculateMergedBUMP(0, merkleProofs)
 
 		// then
 		assert.Error(t, err)
@@ -795,11 +907,7 @@ func TestBUMPModel_CalculateMergedBUMPAndHex(t *testing.T) {
 			"3d2388f114e6f627fd9dd632e72502699e419338bed5022840f4176e1731f715"
 
 		// when
-		bumps := make([]BUMP, 0)
-		for _, mp := range merkleProof {
-			bumps = append(bumps, mp.ToBUMP(0))
-		}
-		bump, err := CalculateMergedBUMP(bumps)
+		bump, err := CalculateMergedBUMP(0, merkleProof)
 		actualHex := bump.Hex()
 
 		// then

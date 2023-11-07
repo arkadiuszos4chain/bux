@@ -49,7 +49,7 @@ func printOut(inputParentTx, testTx *Transaction, beefData *beefTx) string {
 
 func _printTx(tx *Transaction, b *strings.Builder) {
 	b.WriteString("Raw transaction info:\n")
-	btx, _ := bt.NewTxFromString(tx.Hex)
+	btx := bux2btTxConvert(tx)
 	_prettyPrint(btx, b)
 
 	b.WriteString("Bux info:\n")
@@ -64,9 +64,9 @@ func _printTx(tx *Transaction, b *strings.Builder) {
 
 func _printBeefJson(bf *beefTx, b *strings.Builder) {
 	js := _beefTxJs{
-		Version:             bf.version,
-		CompoundMerklePaths: bf.compoundMerklePaths,
-		Transactions:        bf.transactions,
+		Version:      bf.version,
+		Bumps:        bf.bumps,
+		Transactions: bf.transactions,
 	}
 
 	_prettyPrint(js, b)
@@ -87,7 +87,7 @@ func _prettyPrint(v interface{}, b *strings.Builder) {
 }
 
 type _beefTxJs struct {
-	Version             uint32         `json:"version"`
-	CompoundMerklePaths CMPSlice       `json:"compoundMerklePaths"`
-	Transactions        []*Transaction `json:"transactions"`
+	Version      uint32   `json:"version"`
+	Bumps        BUMPs    `json:"bumps"`
+	Transactions []*bt.Tx `json:"transactions"`
 }

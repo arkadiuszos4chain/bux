@@ -23,13 +23,28 @@ func prepareTestDataWithOptions(destination *Destination, getParentTx func() *Tr
 	inputParentTx = getParentTx()
 	testTx = _prepareTxToTest(pubKey, inputParentTx, destination, satoshis, utxoIdx, btOpts)
 
+	btParentTx := bux2btTxConvert(inputParentTx)
+	btTestTx := bux2btTxConvert(testTx)
+
 	testTxBeefData = &beefTx{
-		version:             1,
-		compoundMerklePaths: testTx.draftTransaction.CompoundMerklePathes,
-		transactions:        []*Transaction{inputParentTx, testTx},
+		version:      1,
+		bumps:        testTx.draftTransaction.BUMPs,
+		transactions: []*bt.Tx{btParentTx, btTestTx},
 	}
 
 	return
+}
+
+func bux2btTxConvert(tx *Transaction) *bt.Tx {
+	var btTx *bt.Tx
+	var err error
+
+	btTx, err = bt.NewTxFromString(tx.Hex)
+	if err != nil {
+		panic(err)
+	}
+
+	return btTx
 }
 
 // utils
