@@ -36,13 +36,9 @@ type BUMPLeaf struct {
 }
 
 // CalculateMergedBUMP calculates Merged BUMP from a slice of Merkle Proofs
-func CalculateMergedBUMP(bh uint64, mp []MerkleProof) (BUMP, error) {
-	bump := BUMP{
-		BlockHeight: bh,
-	}
-
-	if len(mp) == 0 || mp == nil {
-		return bump, nil
+func CalculateMergedBUMP(bumps []BUMP) (*BUMP, error) {
+	if len(bumps) == 0 || bumps == nil {
+		return nil, nil
 	}
 
 	blockHeight := bumps[0].BlockHeight

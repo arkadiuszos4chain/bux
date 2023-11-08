@@ -121,12 +121,12 @@ func (b *_falseDraftTxBuilder) _convertOutputsToConfigOutputs() []*TransactionOu
 }
 
 func (b *_falseDraftTxBuilder) _calculateBUMPs() BUMPs {
-	merkleProofs := make(map[uint64][]MerkleProof)
-	merkleProofs[b.parentTx.BlockHeight] = append(merkleProofs[b.parentTx.BlockHeight], b.parentTx.MerkleProof)
+	bumps := make(map[uint64][]BUMP)
+	bumps[b.parentTx.BlockHeight] = append(bumps[b.parentTx.BlockHeight], b.parentTx.BUMP)
 
 	bumpCollection := make(BUMPs, 0)
-	for bh, v := range merkleProofs {
-		bump, err := CalculateMergedBUMP(bh, v)
+	for _, v := range bumps {
+		bump, err := CalculateMergedBUMP(v)
 		if err != nil {
 			panic(err)
 		}
