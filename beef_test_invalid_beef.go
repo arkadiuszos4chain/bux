@@ -24,7 +24,7 @@ func ExampleBeefWithoutParents() string {
 	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleBeefWithoutCmp() string {
+func ExampleBeefWithoutBumps() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 
@@ -35,7 +35,7 @@ func ExampleBeefWithoutCmp() string {
 	return printOut(parentTx, testTx, testBeef)
 }
 
-func ExampleBeefWithEmptyCmp() string {
+func ExampleBeefWithEmptyBumps() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 

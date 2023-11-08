@@ -1,8 +1,6 @@
 package bux
 
 import (
-	"errors"
-
 	"github.com/libsv/go-bt/v2"
 )
 
@@ -12,10 +10,10 @@ var (
 )
 
 func (beefTx *beefTx) toBeefBytes() ([]byte, error) {
-
-	if len(beefTx.bumps) == 0 || len(beefTx.transactions) < 2 { // valid BEEF contains at least two transactions (new transaction and one parent transaction)
-		return nil, errors.New("beef tx is incomplete")
-	}
+	// change for tests
+	// if len(beefTx.bumps) == 0 || len(beefTx.transactions) < 2 { // valid BEEF contains at least two transactions (new transaction and one parent transaction)
+	// 	return nil, errors.New("beef tx is incomplete")
+	// }
 
 	// get beef bytes
 	beefSize := 0

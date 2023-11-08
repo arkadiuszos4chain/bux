@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	s := bux.ExampleBeefWithoutCmp()
+	s := bux.ExampleBeefWithoutBumps()
 
 	fmt.Println(s)
 
-	bux.WriteToFile("without_cmp.txt", "without_cmp", s)
+	bux.WriteToFile("without_bumps.txt", "without_bumps", s)
 }

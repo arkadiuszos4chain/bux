@@ -32,3 +32,16 @@ dist
 
 # Code coverage
 coverage.txt
+already_spended_utxos.txt
+rawtx.txt
+too_much_satoshis.txt
+.gitignore
+with_lock_time_n_sequence.txt
+with_lock_time.txt
+without_parents.txt
+without_bumps.txt
+with_empty_bumps.txt
+.gitignore
+someone_else_utxos.txt
+.gitignore
+with_empty_cmp.txt
