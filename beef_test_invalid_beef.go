@@ -17,7 +17,7 @@ func ExampleBeefWithoutParents() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 1)
+	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 0)
 
 	testBeef.transactions = []*bt.Tx{bux2btTxConvert(testTx)} // no parent
 
@@ -28,7 +28,7 @@ func ExampleBeefWithoutBumps() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 1)
+	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 0)
 
 	testBeef.bumps = nil //no bumps
 
@@ -39,7 +39,7 @@ func ExampleBeefWithEmptyBumps() string {
 	// NOTICE! there is need to change encoding implementation to get BEEF without parents
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 1)
+	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 500, 0)
 
 	testBeef.bumps = BUMPs{} // empty bumps
 

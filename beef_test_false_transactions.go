@@ -7,7 +7,7 @@ import (
 func ExampleAlreadySpendedBeef() string {
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestData(destination, getAlreadySpendedTx, 500, 1)
+	parentTx, testTx, testBeef := prepareTestData(destination, getAlreadySpendedTx, 200, 0)
 
 	return printOut(parentTx, testTx, testBeef)
 }
@@ -15,7 +15,7 @@ func ExampleAlreadySpendedBeef() string {
 func ExampleSomeoneElseUtxos() string {
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestData(destination, getSomeoneElseTx, 500, 1)
+	parentTx, testTx, testBeef := prepareTestData(destination, getSomeoneElseTx, 200, 0)
 
 	return printOut(parentTx, testTx, testBeef)
 }
@@ -23,7 +23,7 @@ func ExampleSomeoneElseUtxos() string {
 func ExampleTooMuchSatoshis() string {
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 5000, 1)
+	parentTx, testTx, testBeef := prepareTestData(destination, getTxReadyToSpend, 5000, 0)
 	return printOut(parentTx, testTx, testBeef)
 }
 
@@ -34,15 +34,15 @@ func ExampleWithLockTime() string {
 
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestDataWithOptions(destination, getTxReadyToSpend, 500, 1, []func(*bt.Tx){withLockTime})
+	parentTx, testTx, testBeef := prepareTestDataWithOptions(destination, getTxReadyToSpend, 200, 0, []func(*bt.Tx){withLockTime})
 
 	return printOut(parentTx, testTx, testBeef)
 }
 
 func ExampleInputsWithLockTimeAndSequence() string {
-	withLockTime := func(tx *bt.Tx) {
-		tx.LockTime = 99999
-	}
+	// withLockTime := func(tx *bt.Tx) {
+	// 	tx.LockTime = 99999
+	// }
 
 	withSequence := func(tx *bt.Tx) {
 		for _, i := range tx.Inputs {
@@ -52,7 +52,7 @@ func ExampleInputsWithLockTimeAndSequence() string {
 
 	destination := getTestDestination()
 
-	parentTx, testTx, testBeef := prepareTestDataWithOptions(destination, getTxReadyToSpend, 500, 1, []func(*bt.Tx){withLockTime, withSequence})
+	parentTx, testTx, testBeef := prepareTestDataWithOptions(destination, getTxReadyToSpend, 200, 0, []func(*bt.Tx){withSequence})
 
 	return printOut(parentTx, testTx, testBeef)
 }
