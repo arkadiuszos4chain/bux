@@ -10,10 +10,15 @@ type _falseDraftTxBuilder struct {
 
 	parentTx *Transaction
 
-	inputs  []*Utxo
+	inputs  []*_input
 	outputs []*_output
 
 	btOpts []func(*bt.Tx)
+}
+
+type _input struct {
+	utxo *Utxo
+	from *Destination
 }
 
 type _output struct {
@@ -33,7 +38,7 @@ func CreateDraftTxBuilder(pubKey string, parentTx *Transaction) *_falseDraftTxBu
 		paymailFrom: paymailFrom,
 		parentTx:    parentTx,
 
-		inputs:  make([]*Utxo, 0),
+		inputs:  make([]*_input, 0),
 		outputs: make([]*_output, 0),
 		btOpts:  make([]func(*bt.Tx), 0),
 	}
@@ -49,7 +54,13 @@ func (b *_falseDraftTxBuilder) WithInput(utxoIdx uint32) {
 		output.Satoshis,
 	)
 
-	b.inputs = append(b.inputs, utxo)
+	dest := Destination{
+		LockingScript: output.LockingScript.String(),
+		Num:           3,
+		Chain:         0,
+	}
+
+	b.inputs = append(b.inputs, &_input{utxo: utxo, from: &dest})
 }
 
 func (b *_falseDraftTxBuilder) WithOutput(destination *Destination, satoshis uint64) {
@@ -78,7 +89,7 @@ func (b *_falseDraftTxBuilder) Build() *DraftTransaction {
 func (b *_falseDraftTxBuilder) _createConfig() *TransactionConfig {
 	inputs := make([]*TransactionInput, 0, len(b.inputs))
 	for _, i := range b.inputs {
-		inputs = append(inputs, &TransactionInput{Utxo: *i})
+		inputs = append(inputs, &TransactionInput{Utxo: *i.utxo, Destination: *i.from})
 	}
 
 	outputs := b._convertOutputsToConfigOutputs()
@@ -137,7 +148,13 @@ func (b *_falseDraftTxBuilder) _calculateBUMPs() BUMPs {
 }
 
 func (b *_falseDraftTxBuilder) _generateHex(falseDraft *DraftTransaction) string {
-	inputUtxos, _, err := falseDraft.getInputsFromUtxos(b.inputs)
+	reserverdUtxos := make([]*Utxo, 0, len(b.inputs))
+
+	for _, i := range b.inputs {
+		reserverdUtxos = append(reserverdUtxos, i.utxo)
+	}
+
+	inputUtxos, _, err := falseDraft.getInputsFromUtxos(reserverdUtxos)
 	if err != nil {
 		panic(err)
 	}

@@ -19,7 +19,14 @@ func prepareTestData(destination *Destination, getParentTx func() *Transaction, 
 }
 
 func prepareTestDataWithOptions(destination *Destination, getParentTx func() *Transaction, satoshis uint64, utxoIdx uint32, btOpts []func(*bt.Tx)) (inputParentTx, testTx *Transaction, testTxBeefData *beefTx) {
-	pubKey := _pubKey
+	xpr, prErr := bitcoin.GenerateHDKeyFromString(_xpriv)
+	if prErr != nil {
+		panic(prErr)
+	}
+	pubKey, xperr := bitcoin.GetExtendedPublicKey(xpr)
+	if xperr != nil {
+		panic(xperr)
+	}
 	inputParentTx = getParentTx()
 	testTx = _prepareTxToTest(pubKey, inputParentTx, destination, satoshis, utxoIdx, btOpts)
 
@@ -48,7 +55,6 @@ func bux2btTxConvert(tx *Transaction) *bt.Tx {
 }
 
 // utils
-
 func _prepareTxToTest(pubKey string, parentTx *Transaction, destination *Destination, satoshis uint64, utxoIdx uint32, btOpts []func(*bt.Tx)) *Transaction {
 	dtBuilder := CreateDraftTxBuilder(pubKey, parentTx)
 

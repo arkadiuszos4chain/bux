@@ -54,10 +54,11 @@ func getTestDestination() *Destination {
 	//toPaymail := "false_tx_test_helper@bux-wallet1.4chain.dev"
 
 	dst := Destination{
+		Type:          "pubkeyhash",
 		Address:       "false_tx_test_helper@bux-wallet1.4chain.dev",
 		Chain:         0,
-		LockingScript: "76a9148a8c4546a95e6fc8d18076a9980d59fd882b4e6988ac",
-		Num:           3,
+		LockingScript: "76a9148ce2d21f9a75e98600be76b25b91c4fef6b40bcd88ac",
+		Num:           114,
 	}
 
 	return &dst
