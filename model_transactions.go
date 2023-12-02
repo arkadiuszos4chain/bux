@@ -3,10 +3,10 @@ package bux
 import (
 	"context"
 
-	"github.com/BuxOrg/bux/chainstate"
-	"github.com/BuxOrg/bux/taskmanager"
-	"github.com/BuxOrg/bux/utils"
 	"github.com/libsv/go-bt/v2"
+
+	"github.com/BuxOrg/bux/chainstate"
+	"github.com/BuxOrg/bux/utils"
 )
 
 // TransactionBase is the same fields share between multiple transaction models
@@ -54,7 +54,6 @@ type Transaction struct {
 	TotalValue      uint64          `json:"total_value" toml:"total_value" yaml:"total_value" gorm:"<-create;type:bigint" bson:"total_value,omitempty"`
 	XpubMetadata    XpubMetadata    `json:"-" toml:"xpub_metadata" gorm:"<-;type:json;xpub_id specific metadata" bson:"xpub_metadata,omitempty"`
 	XpubOutputValue XpubOutputValue `json:"-" toml:"xpub_output_value" gorm:"<-;type:json;xpub_id specific value" bson:"xpub_output_value,omitempty"`
-	MerkleProof     MerkleProof     `json:"merkle_proof" toml:"merkle_proof" yaml:"merkle_proof" gorm:"<-;type:text;comment:Merkle Proof payload from mAPI" bson:"merkle_proof,omitempty"`
 	BUMP            BUMP            `json:"bump" toml:"bump" yaml:"bump" gorm:"<-;type:text;comment:BSV Unified Merkle Path (BUMP) Format" bson:"bump,omitempty"`
 
 	// Virtual Fields
@@ -70,6 +69,10 @@ type Transaction struct {
 	utxos              []Utxo               `gorm:"-" bson:"-"` // json:"destinations,omitempty"
 	XPubID             string               `gorm:"-" bson:"-"` // XPub of the user registering this transaction
 	beforeCreateCalled bool                 `gorm:"-" bson:"-"` // Private information that the transaction lifecycle method BeforeCreate was already called
+}
+
+type TransactionGetter interface {
+	GetTransactionsByIDs(ctx context.Context, txIDs []string) ([]*Transaction, error)
 }
 
 // newTransactionBase creates the standard transaction model base
@@ -226,17 +229,16 @@ func (m *Transaction) isExternal() bool {
 func (m *Transaction) setChainInfo(txInfo *chainstate.TransactionInfo) {
 	m.BlockHash = txInfo.BlockHash
 	m.BlockHeight = uint64(txInfo.BlockHeight)
-	m.setMerkleRoot(txInfo)
+	m.setBUMP(txInfo)
 }
 
-func (m *Transaction) setMerkleRoot(txInfo *chainstate.TransactionInfo) {
-	if txInfo.MerkleProof != nil {
-		mp := MerkleProof(*txInfo.MerkleProof)
-		m.MerkleProof = mp
+func (m *Transaction) setBUMP(txInfo *chainstate.TransactionInfo) {
+	bump := MerkleProofToBUMP(txInfo.MerkleProof, uint64(txInfo.BlockHeight))
+	m.BUMP = bump
+}
 
-		bump := mp.ToBUMP(uint64(txInfo.BlockHeight))
-		m.BUMP = bump
-	}
+func (m *Transaction) isMined() bool {
+	return m.BlockHash != ""
 }
 
 // IsXpubAssociated will check if this key is associated to this transaction
@@ -303,49 +305,19 @@ func (m *Transaction) Display() interface{} {
 // hasOneKnownDestination will check if the transaction has at least one known destination
 //
 // This is used to validate if an external transaction should be recorded into the engine
-func (m *TransactionBase) hasOneKnownDestination(ctx context.Context, client ClientInterface, opts ...ModelOps) bool {
+func (m *TransactionBase) hasOneKnownDestination(ctx context.Context, client ClientInterface) bool {
 	// todo: this can be optimized searching X records at a time vs loop->query->loop->query
-	lockingScript := ""
-	for index := range m.parsedTx.Outputs {
-		lockingScript = m.parsedTx.Outputs[index].LockingScript.String()
-		destination, err := getDestinationWithCache(ctx, client, "", "", lockingScript, opts...)
+	for _, output := range m.parsedTx.Outputs {
+		lockingScript := output.LockingScript.String()
+		destination, err := getDestinationWithCache(ctx, client, "", "", lockingScript)
+
 		if err != nil {
-			destination = newDestination("", lockingScript, opts...)
-			destination.Client().Logger().Error(ctx, "error getting destination: "+err.Error())
+			client.Logger().Error(ctx, "error getting destination: "+err.Error())
+			continue
+
 		} else if destination != nil && destination.LockingScript == lockingScript {
 			return true
 		}
 	}
 	return false
-}
-
-// RegisterTasks will register the model specific tasks on client initialization
-func (m *Transaction) RegisterTasks() error {
-	// No task manager loaded?
-	tm := m.Client().Taskmanager()
-	if tm == nil {
-		return nil
-	}
-
-	ctx := context.Background()
-	checkTask := m.Name() + "_" + TransactionActionCheck
-
-	if err := tm.RegisterTask(&taskmanager.Task{
-		Name:       checkTask,
-		RetryLimit: 1,
-		Handler: func(client ClientInterface) error {
-			if taskErr := taskCheckTransactions(ctx, client.Logger(), WithClient(client)); taskErr != nil {
-				client.Logger().Error(ctx, "error running "+checkTask+" task: "+taskErr.Error())
-			}
-			return nil
-		},
-	}); err != nil {
-		return err
-	}
-
-	return tm.RunTask(ctx, &taskmanager.TaskOptions{
-		Arguments:      []interface{}{m.Client()},
-		RunEveryPeriod: m.Client().GetTaskPeriod(checkTask),
-		TaskName:       checkTask,
-	})
 }
