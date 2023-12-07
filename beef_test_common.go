@@ -9,9 +9,10 @@ import (
 	"github.com/libsv/go-bt/v2/sighash"
 )
 
-const _xpriv string = ""
-const _pubKey string = "TODO"
-const _paymailFrom string = ""
+//const _xpriv string = "xprv9s21ZrQH143K376uSfduTnWw92BJm6AqiynFNT1avYWhykghw2D72EYf5bQQCNpczBAqrvtevayRzXBp6qX84fzo6kc8erzhdeSQpm3Q68g"
+const _xpriv string = "xprv9s21ZrQH143K4YxSz8omiMxWfyXEKrToz3a9neWyBctgKY8aseJBQfr9o6Yg4CKgx1pMoLTXzRg24ocVRqqPHuJRQ7CpwwuUAC4GGqG9vyU"
+const _pubKey string = /*testXPub*/ "xpub661MyMwAqRbcFrBJbKwBGCB7d3fr2SaAuXGM95BA62X41m6eW2ehRQGW4xLi9wkEXUGnQZYxVVj4PxXnyrLk7jdqvBAs1Qq9gf6ykMvjR7J"
+const _paymailFrom string = "false_tx_test@bux-wallet1.4chain.dev"
 
 // "interface"
 func prepareTestData(destination *Destination, getParentTx func() *Transaction, satoshis uint64, utxoIdx uint32) (inputParentTx, testTx *Transaction, testTxBeefData *beefTx) {
@@ -34,8 +35,8 @@ func prepareTestDataWithOptions(destination *Destination, getParentTx func() *Tr
 	btTestTx := bux2btTxConvert(testTx)
 
 	testTxBeefData = &beefTx{
-		version:      1,
-		bumps:        testTx.draftTransaction.BUMPs,
+		version: 1,
+		//	bumps:        testTx.draftTransaction.BUMPs,
 		transactions: []*bt.Tx{btParentTx, btTestTx},
 	}
 

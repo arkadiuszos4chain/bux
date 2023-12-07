@@ -29,9 +29,9 @@ type _output struct {
 func CreateDraftTxBuilder(pubKey string, parentTx *Transaction) *_falseDraftTxBuilder {
 	paymailFrom := _paymailFrom
 
-	if parentTx.MerkleProof.TxOrID == "" {
-		panic("not minded parent tx")
-	}
+	//if parentTx.MerkleProof.TxOrID == "" {
+	//	panic("not minded parent tx")
+	//}
 
 	return &_falseDraftTxBuilder{
 		pubKey:      pubKey,
@@ -80,7 +80,6 @@ func (b *_falseDraftTxBuilder) Build() *DraftTransaction {
 	falseConfig := b._createConfig()
 
 	falseDraft := newDraftTransaction(b.pubKey, falseConfig)
-	falseDraft.BUMPs = b._calculateBUMPs()
 	falseDraft.Hex = b._generateHex(falseDraft)
 
 	return falseDraft
@@ -129,22 +128,6 @@ func (b *_falseDraftTxBuilder) _convertOutputsToConfigOutputs() []*TransactionOu
 	}
 
 	return results
-}
-
-func (b *_falseDraftTxBuilder) _calculateBUMPs() BUMPs {
-	bumps := make(map[uint64][]BUMP)
-	bumps[b.parentTx.BlockHeight] = append(bumps[b.parentTx.BlockHeight], b.parentTx.BUMP)
-
-	bumpCollection := make(BUMPs, 0)
-	for _, v := range bumps {
-		bump, err := CalculateMergedBUMP(v)
-		if err != nil {
-			panic(err)
-		}
-		bumpCollection = append(bumpCollection, bump)
-	}
-
-	return bumpCollection
 }
 
 func (b *_falseDraftTxBuilder) _generateHex(falseDraft *DraftTransaction) string {

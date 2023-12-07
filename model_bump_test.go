@@ -1011,11 +1011,15 @@ func TestBUMPModel_CalculateMergedBUMPAndHex(t *testing.T) {
 		// when
 		bumps := make([]BUMP, 0)
 		for _, mp := range merkleProof {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 			bumps = append(bumps, mp.ToBUMP())
 =======
 			bumps = append(bumps, MerkleProofToBUMP(&mp, 0))
 >>>>>>> rc-beef-v2-payments
+=======
+			bumps = append(bumps, mp.ToBUMP(0))
+>>>>>>> Stashed changes
 		}
 		bump, err := CalculateMergedBUMP(bumps)
 		actualHex := bump.Hex()

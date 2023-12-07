@@ -16,6 +16,22 @@ type beefTx struct {
 	transactions []*bt.Tx
 }
 
+func createBeefTx(ctx context.Context, tx *Transaction, store TransactionGetter) (*beefTx, error) {
+	if err := hydrateTransaction(ctx, tx); err != nil {
+		return nil, err
+	}
+
+	bumpBtFactors, bumpFactors, err := prepareBEEFFactors(ctx, tx, store)
+	if err != nil {
+		return nil, fmt.Errorf("prepareBUMPFactors() error: %w", err)
+	}
+
+	bumps, err := calculateMergedBUMP(bumpFactors)
+	sortedTxs := kahnTopologicalSortTransactions(bumpBtFactors)
+
+	return newBeefTx(ctx, 1, bumps, sortedTxs)
+}
+
 // ToBeef generates BEEF Hex for transaction
 func ToBeef(ctx context.Context, tx *Transaction, store TransactionGetter) (string, error) {
 	if err := hydrateTransaction(ctx, tx); err != nil {
